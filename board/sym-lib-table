@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name IRatmega-rescue)(type Legacy)(uri ${KIPRJMOD}/IRatmega-rescue.lib)(options "")(descr ""))
+  (lib (name LEDatmega-rescue)(type Legacy)(uri ${KIPRJMOD}/LEDatmega-rescue.lib)(options "")(descr ""))
+)
