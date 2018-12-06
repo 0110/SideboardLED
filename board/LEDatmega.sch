@@ -5,10 +5,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
-Title ""
-Date ""
-Rev ""
-Comp ""
+Title "Sideboard atmega LED board"
+Date "2018-12-06"
+Rev "01"
+Comp "private"
 Comment1 ""
 Comment2 ""
 Comment3 ""
@@ -43,18 +43,14 @@ $EndComp
 $Comp
 L power:GND #PWR08
 U 1 1 5BB8DDB6
-P 8100 3650
-F 0 "#PWR08" H 8100 3400 50  0001 C CNN
-F 1 "GND" H 8100 3500 50  0000 C CNN
-F 2 "" H 8100 3650 50  0001 C CNN
-F 3 "" H 8100 3650 50  0001 C CNN
-	1    8100 3650
-	1    0    0    -1  
+P 8450 3550
+F 0 "#PWR08" H 8450 3300 50  0001 C CNN
+F 1 "GND" H 8450 3400 50  0000 C CNN
+F 2 "" H 8450 3550 50  0001 C CNN
+F 3 "" H 8450 3550 50  0001 C CNN
+	1    8450 3550
+	0    1    1    0   
 $EndComp
-Wire Wire Line
-	8450 3350 8100 3350
-Wire Wire Line
-	8100 3350 8100 3650
 Wire Wire Line
 	6650 2050 6950 2050
 $Comp
@@ -70,7 +66,7 @@ F 3 "" H 5650 1350 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5650 1450 5650 1350
-Text Notes 8250 2950 0    50   ~ 0
+Text Notes 8150 2650 0    50   ~ 0
 UART to other Microcontroller
 $Comp
 L Device:R R4
@@ -172,17 +168,6 @@ Wire Wire Line
 Wire Wire Line
 	6950 1950 6950 2050
 $Comp
-L Connector_Generic:Conn_01x04 J1
-U 1 1 5BC33359
-P 8650 3150
-F 0 "J1" H 8730 3142 50  0000 L CNN
-F 1 "Conn_01x04" H 8730 3051 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 8650 3150 50  0001 C CNN
-F 3 "~" H 8650 3150 50  0001 C CNN
-	1    8650 3150
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:+5V #PWR09
 U 1 1 5C083FE3
 P 9500 2100
@@ -262,4 +247,15 @@ Wire Wire Line
 	2600 3100 2950 3100
 Wire Wire Line
 	2950 3300 2600 3300
+$Comp
+L Connector:Conn_01x06_Male J1
+U 1 1 5C0985AE
+P 8650 3350
+F 0 "J1" H 8623 3230 50  0000 R CNN
+F 1 "Conn_01x06_Male" H 8623 3321 50  0000 R CNN
+F 2 "" H 8650 3350 50  0001 C CNN
+F 3 "~" H 8650 3350 50  0001 C CNN
+	1    8650 3350
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
