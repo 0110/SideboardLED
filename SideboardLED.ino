@@ -118,11 +118,12 @@ void loop() {
     }
     FastLED.show();
   } else {
-    if (rainbowIndex >= 256) {
+    if (rainbowIndex >= 255) {
       /* one byte used -> simulate overflow */
       rainbowIndex=0;
     }
     ledset.fill_rainbow(rainbowIndex++);
+    ledset.fadeLightBy( 64 );
     FastLED.delay(30);
   }
  
