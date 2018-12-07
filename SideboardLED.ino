@@ -23,6 +23,8 @@ CRGBSet ledset(leds, NUM_LEDS);
 #define BRIGHTNESS  128   /** Average brightness, that shall not exeeded */
 #define FADEBLACK   -2
 
+#define PIN_BUTTON 4      /** PD4 = Input for button */
+
 /****************** Command line ***********************/
 int CMD_MAX = 128;
 char myCmd[128];
@@ -35,9 +37,7 @@ void setup() {
   // so that colors can be more accurately rendered through the 'temperature' profiles
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
 
-  //TODO: Can this line be removed?
-  //FastLED.setBrightness( BRIGHTNESS );
-
+  pinMode(PIN_BUTTON, INPUT);        // sets the digital pin 7 as input
   
   // Turn the LED on, then pause
   leds[0] = CRGB::Red;
@@ -104,10 +104,56 @@ void sendPingAckOverSerial(){
   Serial.println(F("PACK"));
 }
 
+/**
+ * Extract the color from the given LED command
+ */
+void parseColor(char* pCmd, CRGB *pColor) {
+  unsigned int colorParts[3]; /* 0: red, 1: green, 2: blue */
+  unsigned int colorSum = 0;
+  for(int i=0; i < (2*3); i+= 2) {
+    colorParts[i/2] = (pCmd[i] <= '9') ? ((pCmd[i]-'0') << 4) : (((pCmd[i]-'A')+10) << 4);
+    if (colorParts[i/2] < 0) { Serial.print("calcErr:"); Serial.println(colorParts[i/2]); }
+    colorParts[i/2] += (pCmd[i+1] <= '9') ? ((pCmd[i+1]-'0')) : (((pCmd[i+1]-'A')+10));
+  }
+  pColor->r = colorParts[0]; /* fill red */
+  pColor->g = colorParts[1]; /* fill green */
+  pColor->b = colorParts[2]; /* fill blue */
+
+  colorSum = pColor->r;
+  colorSum += pColor->g;
+  colorSum += pColor->b;
+  /* Generate the average brightness */
+  colorSum = (colorSum / 3);
+  if (colorSum > BRIGHTNESS) {
+    /* scale the brightness, if the values are too high */
+    pColor->r = pColor->r * BRIGHTNESS / colorSum;
+    pColor->g = pColor->g * BRIGHTNESS / colorSum;
+    pColor->b = pColor->b * BRIGHTNESS / colorSum;
+  }
+}
+
+/*
+ * Give the user some helpfull advice.
+ * (Text is stored in the flash to save RAM of the Arduino)
+ */
+void sendHelpOverSerial()
+{
+  Serial.println(F("----help is coming----"));
+  Serial.println(F("all commands must be prefixed with \"ollpe\""));
+  Serial.println(F("----commands----"));
+  Serial.println(F("axxxxxx\t set all leds to RRGGBB (hex: 0-9A-F)"));
+  Serial.println(F("w00xxxxxx\t set led 0 (first) to RRGGBB (hex: 0-9A-F)"));  
+  Serial.println(F("r00\t returns state of led 0 (first)"));
+  Serial.println(F("c\t clear all leds (000000h)"));
+  Serial.println(F("m\t magic rainbow for all leds until next command is received"));
+  Serial.println(F("ping\t returns \"PACK\""));
+  Serial.println(F("help\t prints this help"));
+  Serial.println(F("----help end----"));
+}
 
 void loop() { 
   /* spcial rainbow mode */
-  static long rainbowIndex = -1;
+  static int rainbowIndex = -1;
   static CRGB color;
   if (rainbowIndex < 0) {
     //delay needed to have a chance to get the whole message
@@ -123,8 +169,15 @@ void loop() {
       rainbowIndex=0;
     }
     ledset.fill_rainbow(rainbowIndex++);
-    ledset.fadeLightBy( 64 );
+    // Dim a color by 25% (64/256ths)
+    ledset.fadeLightBy( 60 );
     FastLED.delay(30);
+  }
+
+  // check if button was pressed
+  if (digitalRead(PIN_BUTTON)) {
+    Serial.println(F("BTN"));
+    rainbowIndex=0; /* activate rainbow */
   }
  
   int inputSize = readFromSerialIntoCmdArray();
@@ -153,12 +206,6 @@ void loop() {
     else if(myCmd[5] == 'a')
     {
       parseColor(myCmd+6, &color);
-      Serial.print("RGB:");
-      Serial.print(color.r);
-      Serial.print(";");
-      Serial.print(color.g);
-      Serial.print(";");
-      Serial.println(color.b);
       ledset.fill_solid(color);
       sendAckOverSerial();
     }
@@ -170,7 +217,7 @@ void loop() {
     else if(myCmd[5] == 'm')
     {
       rainbowIndex=0; /* activate rainbow */
-      Serial.println(F("Rainbow started"));
+      Serial.println(F("Rainbow"));
       sendAckOverSerial();
     }
     else if(myCmd[5] == 'w')
@@ -189,61 +236,11 @@ void loop() {
     {
       int index = (myCmd[6]-'0') * 10 + (myCmd[7]-'0');
       if (index > NUM_LEDS) {
-        Serial.println(F("Index too large"));
         sendNackOverSerial();
       } else {
        Serial.println(leds[index]);
+        sendAckOverSerial();
       }
     }
   }
-}
-
-/**
- * Extract the color from the given LED command
- */
-void parseColor(char* pCmd, CRGB *pColor) {
-  unsigned int colorParts[3]; /* 0: red, 1: green, 2: blue */
-  unsigned long colorSum = 0;
-  for(int i=0; i < (2*3); i+= 2) {
-    Serial.print(pCmd[i]);Serial.print(" and "); Serial.println(pCmd[i+1]);
-    colorParts[i/2] = (pCmd[i] <= '9') ? ((pCmd[i]-'0') << 4) : (((pCmd[i]-'A')+10) << 4);
-    if (colorParts[i/2] < 0) { Serial.print("calcErr:"); Serial.println(colorParts[i/2]); }
-    colorParts[i/2] += (pCmd[i+1] <= '9') ? ((pCmd[i+1]-'0')) : (((pCmd[i+1]-'A')+10));
-  }
-  pColor->r = colorParts[0]; /* fill red */
-  pColor->g = colorParts[1]; /* fill green */
-  pColor->b = colorParts[2]; /* fill blue */
-
-  colorSum = pColor->r;
-  colorSum += pColor->g;
-  colorSum += pColor->b;
-  /* Generate the average brightness */
-  colorSum = (colorSum / 3);
-  Serial.print("sum:");
-  Serial.println(colorSum);
-  if (colorSum > BRIGHTNESS) {
-    /* scale the brightness, if the values are too high */
-    pColor->r = pColor->r * BRIGHTNESS / colorSum;
-    pColor->g = pColor->g * BRIGHTNESS / colorSum;
-    pColor->b = pColor->b * BRIGHTNESS / colorSum;
-  }
-}
-
-/*
- * Give the user some helpfull advice.
- * (Text is stored in the flash to save RAM of the Arduino)
- */
-void sendHelpOverSerial()
-{
-  Serial.println(F("----help is coming----"));
-  Serial.println(F("all commands must be prefixed with \"ollpe\""));
-  Serial.println(F("----commands----"));
-  Serial.println(F("axxxxxx\t set all leds to RRGGBB (hex: 0-9A-F)"));
-  Serial.println(F("w00xxxxxx\t set led 0 (first) to RRGGBB (hex: 0-9A-F)"));  
-  Serial.println(F("r00\t returns state of led 0 (first)"));
-  Serial.println(F("c\t clear all leds (000000h)"));
-  Serial.println(F("m\t magic rainbow for all leds until next command is received"));
-  Serial.println(F("ping\t returns \"PACK\""));
-  Serial.println(F("help\t prints this help"));
-  Serial.println(F("----help end----"));
 }
