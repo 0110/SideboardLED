@@ -1,0 +1,5 @@
+// Install the Serial Binding (https://www.openhab.org/addons/bindings/serial1/)
+
+// Sideboard
+Color sideboardLed "Sideboard" (LivingRoom) { serial="/dev/ttyUSB0@9600,ON(ollpem\n),OFF(ollpec\n)" }
+String sideboardLedRaw { serial="/dev/ttyUSB0@9600" }

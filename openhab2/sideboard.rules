@@ -1,0 +1,37 @@
+// Some necessary color convertion
+rule "Set RGB LEDs from Color item using ColorPicker"
+  when
+    Item sideboardLed received command
+  then
+    if (receivedCommand instanceof HSBType)
+    {
+        val red = receivedCommand.red * 2.55
+        val green = receivedCommand.green * 2.55
+        val blue = receivedCommand.blue * 2.55
+     
+        logInfo("Sideboard", "R" + red + " G" + green + " B" + blue)
+        val ledRawCmd = String::format("ollpea%X%X%X\n", red.intValue(), green.intValue(), blue.intValue());
+        //logInfo("SideboardDebug", ledRawCmd)
+        sideboardLedRaw.sendCommand(ledRawCmd)
+    }
+end
+
+// Magic, when using kodi
+rule "Kode stop, light on"
+when
+    Item Kodi_Stop changed from OFF to ON
+then
+    sendCommand(sideboardLed, HSBType::BLUE)
+end
+rule "Kode start, light off"
+when
+    Item Kodi_Stop changed from ON to OFF
+then
+    sendCommand(sideboardLed, OFF)
+end
+rule "No Kodi online, no LED"
+when
+    Item Kodi_Online changed from ON to OFF
+then
+    sendCommand(sideboardLed, OFF)
+end
