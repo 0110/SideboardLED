@@ -16,6 +16,7 @@ Programmer, e.g.:
 In order to flash the software, select the following settings in Arduino:
 * Tools | Board "Arduino NG or older"
 * Tools | Processor "Atmega8"
+* Sketch | Export Compiled Binary
 
 In your arduino installtion, update the CPU frequency, as we are using the internal clock with 8Mhz.
 Find the following file */hardware/arduino/avr/boards.txt*.
