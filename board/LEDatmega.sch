@@ -43,12 +43,12 @@ $EndComp
 $Comp
 L power:GND #PWR08
 U 1 1 5BB8DDB6
-P 8450 3550
-F 0 "#PWR08" H 8450 3300 50  0001 C CNN
-F 1 "GND" H 8450 3400 50  0000 C CNN
-F 2 "" H 8450 3550 50  0001 C CNN
-F 3 "" H 8450 3550 50  0001 C CNN
-	1    8450 3550
+P 8450 3350
+F 0 "#PWR08" H 8450 3100 50  0001 C CNN
+F 1 "GND" H 8450 3200 50  0000 C CNN
+F 2 "" H 8450 3350 50  0001 C CNN
+F 3 "" H 8450 3350 50  0001 C CNN
+	1    8450 3350
 	0    1    1    0   
 $EndComp
 Wire Wire Line
@@ -247,17 +247,6 @@ Wire Wire Line
 	2600 3100 2950 3100
 Wire Wire Line
 	2950 3300 2600 3300
-$Comp
-L Connector:Conn_01x06_Male J1
-U 1 1 5C0985AE
-P 8650 3350
-F 0 "J1" H 8623 3230 50  0000 R CNN
-F 1 "Conn_01x06_Male" H 8623 3321 50  0000 R CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical" H 8650 3350 50  0001 C CNN
-F 3 "~" H 8650 3350 50  0001 C CNN
-	1    8650 3350
-	-1   0    0    1   
-$EndComp
 Wire Wire Line
 	6650 3550 6900 3550
 $Comp
@@ -346,4 +335,17 @@ Wire Wire Line
 	10250 1350 10700 1350
 Wire Wire Line
 	10700 1450 10250 1450
+$Comp
+L Connector:Conn_01x03_Female J1
+U 1 1 5C0B1DA3
+P 8650 3250
+F 0 "J1" H 8677 3276 50  0000 L CNN
+F 1 "Conn_01x03_Female" H 8677 3185 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 8650 3250 50  0001 C CNN
+F 3 "~" H 8650 3250 50  0001 C CNN
+	1    8650 3250
+	1    0    0    -1  
+$EndComp
+Text Notes 7350 3700 0    50   ~ 0
+Button
 $EndSCHEMATC
