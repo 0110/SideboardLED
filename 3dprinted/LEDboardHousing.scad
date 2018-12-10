@@ -1,7 +1,8 @@
 boardWidth=39;
-boardDeepth=43;
+boardDeepth=54;
 wallWidth=2;
-wallHeight=30;
+wallHeight=40;
+wallHeightTop=20;
 // connectors
 buttonHole=7.5;
 powerHole=8.5;
@@ -15,17 +16,18 @@ drill=5;
 
 cube([boardWidth,boardDeepth,wallWidth], center=true);
 // right
-translate([boardWidth/2+wallWidth/2,0,wallHeight/2-wallWidth/2]) difference() {
-    cube([wallWidth,boardDeepth, wallHeight], center=true);
-    // power
-    translate([0, boardDeepth*0.33,wallHeight*0.25]) rotate([0,90,0]) cylinder(d=powerHole, h=wallWidth*2, center=true, $fn=180);
-    // button
-    translate([0, 0,wallHeight*0.25]) rotate([0,90,0]) cylinder(d=buttonHole, h=wallWidth*2, center=true, $fn=180);
-}
+translate([boardWidth/2+wallWidth/2,0,wallHeightTop/2-wallWidth/2]) cube([wallWidth,boardDeepth, wallHeightTop], center=true);
 // left
 translate([-(boardWidth/2+wallWidth/2),0,wallHeight/2-wallWidth/2]) cube([wallWidth,boardDeepth, wallHeight], center=true);
 // top
-translate([0,boardDeepth/2+wallWidth/2,wallHeight/2-wallWidth/2]) cube([boardWidth+2*wallWidth,wallWidth, wallHeight], center=true);
+translate([0,boardDeepth/2+wallWidth/2,wallHeight/2-wallWidth/2]) union() {
+    cube([boardWidth+2*wallWidth,wallWidth, wallHeight], center=true);
+    // power
+    translate([boardDeepth*0.25, 0,wallHeight*0.25]) rotate([90,90,0]) cylinder(d=powerHole, h=wallWidth*2, center=true, $fn=180);
+    // button
+    translate([0, 0,wallHeight*0.25]) rotate([90,90,0]) cylinder(d=buttonHole, h=wallWidth*2, center=true, $fn=180);
+
+}
 // buttom
 translate([0,-(boardDeepth/2+wallWidth/2),wallHeight/2-wallWidth/2]) difference() {
     cube([boardWidth+2*wallWidth,wallWidth, wallHeight], center=true);
